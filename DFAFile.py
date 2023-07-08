@@ -1,5 +1,6 @@
 from Automaton import Automaton
 
+
 class DFA(Automaton):
     def __init__(self):
         super().__init__()
@@ -46,37 +47,24 @@ class DFA(Automaton):
                             self.transitions[(state, alpha)] = dest
                             break
 
-                self.transitions[(state, alpha)] = dest
+                # self.transitions[(state, alpha)] = dest
 
         print()
         self.start_state = input("Enter the start state: ")
         self.accept_states = input("Enter the accept states (please separate by space): ").split()
 
-
-
-    # def is_accepted(self, input_string: str) -> bool:
-    #     current_state = self.start_state
-    #     for char in input_string:
-    #         current_state = self.transitions.get((current_state, char))
-    #         if current_state is None:
-    #             return False
-    #     return bool(current_state.intersection(self.accept_states))
-
-
     def is_accepted(self, input_string: str) -> bool:
-        current_states = {self.start_state}  # Initialize with the start state
+        current_state = self.start_state  # Initialize with the start state
         for char in input_string:
-            next_states = set()
-            for state in current_states:
-                transition = self.transitions.get((state, char))
-                if transition:
-                    next_states.update(transition)  # Add possible next states
-            current_states = next_states  # Update current states with possible next states
+            current_state = self.transitions.get((current_state, char))
+            if current_state is None:
+                return False
 
-        return bool(current_states.intersection(self.accept_states))
+        return current_state in self.accept_states
 
     def test_dfa(self):
-        print(self.singleline + f"\n{self.Title.center(self.width)}\n{self.TestTitle.center(self.width)}\n" + self.singleline)
+        print(
+            self.singleline + f"\n{self.Title.center(self.width)}\n{self.TestTitle.center(self.width)}\n" + self.singleline)
         input_string = input("Enter an input string: ")
         if self.is_accepted(input_string):
             print(f"\nThe DFA string '{input_string}' is ACCEPTED")
@@ -85,7 +73,6 @@ class DFA(Automaton):
         print(self.doubleline)
         import main
         main.try_again(self)
-
 
     def dfa_print(self):
         self.input_dfa()

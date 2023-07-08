@@ -1,5 +1,6 @@
 from Automaton import Automaton
 
+
 class ENFA(Automaton):
     def __init__(self):
         super().__init__()
@@ -26,7 +27,7 @@ class ENFA(Automaton):
                     dest_without_q = input()
 
                     if dest_without_q == "." or not dest_without_q:
-                        self.transitions[(state, alpha)] = "ø"
+                        self.transitions[(state, alpha)] = set()
                         break
                     else:
                         dest_values = dest_without_q.split(',')
@@ -47,43 +48,38 @@ class ENFA(Automaton):
         self.accept_states = input("Enter the accept states (comma-separated): ").split(',')
 
 
-    def epsilon_closure(self):
-        closure = set(self.states)
-        stack = list(self.states)
+    def epsilon_closure(self, states):
+        closure = set(states)
 
-        while stack:
-            state = stack.pop()
+        # while the closure is still being increased
+        while True:
+            new_states = set(s for state in closure
+                             if (state, 'ε') in self.transitions
+                             for s in self.transitions[(state, 'ε')]) - closure
 
-            if state in self.transitions and '' in self.transitions[state]:
-                for epsilon_state in self.transitions[state]['']:
-                    if epsilon_state not in closure:
-                        closure.add(epsilon_state)
-                        stack.append(epsilon_state)
+            if not new_states:
+                return closure
 
-        return closure
+            closure |= new_states
 
-    def move(self, symbol):
+    def move(self, states, symbol):
         moves = set()
-
-        for state in self.states:
+        for state in states:
             if (state, symbol) in self.transitions:
-                next_states = self.transitions[(state, symbol)]
-
-                if next_states is not None:
-                    moves.update(next_states)
-
+                moves |= set(self.transitions[(state, symbol)])
         return moves
 
     def accepts(self, input_string):
-        current_states = self.epsilon_closure()
+        current_states = self.epsilon_closure([self.start_state])
 
         for symbol in input_string:
-            current_states = self.epsilon_closure()
+            current_states = self.epsilon_closure(self.move(current_states, symbol))
 
         return any(state in self.accept_states for state in current_states)
 
     def test_enfa(self):
-        print(self.singleline + f"\n{self.Title.center(self.width)}\n{self.TestTitle.center(self.width)}\n" + self.singleline)
+        print(
+            self.singleline + f"\n{self.Title.center(self.width)}\n{self.TestTitle.center(self.width)}\n" + self.singleline)
         input_string = input("Enter an input string: ")
         if self.accepts(input_string):
             print(f"\nThe ε-NFA string '{input_string}' is ACCEPTED")
@@ -92,7 +88,6 @@ class ENFA(Automaton):
         print(self.doubleline)
         import main
         main.try_again(self)
-
 
     def enfa_print(self):
         self.input_enfa()

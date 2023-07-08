@@ -6,8 +6,6 @@ class NFA(Automaton):
         super().__init__()
         self.Title = "NONDETERMINISTIC FINITE AUTOMATA (NFA)"
 
-
-
     def input_nfa(self):
         print(self.doubleline + f"\n{self.Title.center(self.width)}\n" + self.singleline)
         print("You have selected: Non-Deterministic Finite Automata! ")
@@ -56,11 +54,11 @@ class NFA(Automaton):
                 if (state, symbol) in self.transitions:
                     next_states.update(self.transitions[(state, symbol)])
             current_states = next_states
-        return bool(current_states.intersection(self.accept_states))
-
+        return any(state in self.accept_states for state in current_states)
 
     def test_nfa(self):
-        print(self.singleline + f"\n{self.Title.center(self.width)}\n{self.TestTitle.center(self.width)}\n" + self.singleline)
+        print(
+            self.singleline + f"\n{self.Title.center(self.width)}\n{self.TestTitle.center(self.width)}\n" + self.singleline)
         input_string = input("Enter an input string: ")
         if self.is_accepted(input_string):
             print(f"\nThe NFA string '{input_string}' is ACCEPTED")

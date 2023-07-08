@@ -16,7 +16,7 @@ class Automaton:
         self.transitions: Dict[(str, str), str] = {}
 
         # q1
-        self.start_state = None
+        self.start_state: str = None
 
         # ["q2"]
         self.accept_states: List[str] = []
